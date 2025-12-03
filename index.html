@@ -3,32 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Film coperti da licenza ombrello</title>
-    <!-- Bootstrap CSS for styling -->
+    <title>Movie Collection Browser</title>
+    
+    <!-- Bootstrap 5 CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css">
-    <!-- DataTables CSS -->
+    <!-- DataTables Bootstrap 5 CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+    <!-- DataTables Responsive CSS (This fixes the mobile view) -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap5.min.css">
     
     <style>
-        body { padding: 20px; background-color: #f8f9fa; }
-        .container { background-color: white; padding: 30px; border-radius: 8px; box-shadow: 0 0 15px rgba(0,0,0,0.1); }
-        h1 { margin-bottom: 20px; text-align: center; color: #333; }
-        #loading { text-align: center; font-size: 1.2rem; color: #666; }
+        body { 
+            background-color: #f0f2f5; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        .container { 
+            margin-top: 20px; 
+            background-color: white; 
+            padding: 20px; 
+            border-radius: 10px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
+        }
+        h1 { 
+            text-align: center; 
+            color: #2c3e50; 
+            margin-bottom: 25px; 
+            font-weight: 700;
+        }
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
+            .container { padding: 10px; }
+            h1 { font-size: 1.5rem; }
+            table.dataTable tbody th, table.dataTable tbody td { font-size: 14px; }
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>🎬 Film coperti da licenza ombrello</h1>
-    <h2>Cercate qui i film per il prossimo cineforum!</h2>
-    <div id="loading">Loading data, please wait...</div>
+    <h1>🎬 MPLC Movie Database</h1>
+    <div id="loading" class="text-center p-5">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-2">Loading library...</p>
+    </div>
     
-    <table id="movieTable" class="table table-striped" style="width:100%; display:none;">
+    <table id="movieTable" class="table table-hover table-striped" style="width:100%; display:none;">
         <thead>
             <tr>
                 <th>Title</th>
-                <th>Original Title</th>
                 <th>Year</th>
+                <th>Original Title</th>
                 <th>Release Date</th>
                 <th>Genres</th>
                 <th>Director</th>
@@ -36,52 +62,63 @@
                 <th>Country</th>
             </tr>
         </thead>
-        <tbody>
-            <!-- Data will be inserted here by JavaScript -->
-        </tbody>
+        <tbody></tbody>
     </table>
 </div>
 
 <!-- jQuery -->
 <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
-<!-- PapaParse (to read the CSV) -->
+<!-- Bootstrap Bundle -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<!-- PapaParse -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-<!-- DataTables (to build the table) -->
+<!-- DataTables Core -->
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<!-- DataTables Responsive (Crucial for mobile) -->
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap5.min.js"></script>
 
 <script>
     $(document).ready(function() {
-        // Parse the CSV file
         Papa.parse("mplc-collection-titles.xlsx - Titles.csv", {
             download: true,
             header: true,
             skipEmptyLines: true,
+            transformHeader: function(h) { return h.trim(); },
             complete: function(results) {
-                // results.data contains the JSON from CSV
                 var data = results.data;
                 
-                // Initialize DataTable
                 $('#movieTable').DataTable({
                     data: data,
+                    // Define columns. The 'responsivePriority' ensures Title (0) and Year (1000) stay visible longest.
                     columns: [
-                        { data: "Title" },
-                        { data: "Original title" },
-                        { data: "Year" },
-                        { data: "Release date" },
-                        { data: "Genres" },
-                        { data: "Director(s)" },
-                        { data: "Actor(s)" },
-                        { data: "Country" }
+                        { data: "Title", defaultContent: "", responsivePriority: 1 },
+                        { data: "Year", defaultContent: "", responsivePriority: 2 },
+                        { data: "Original title", defaultContent: "" },
+                        { data: "Release date", defaultContent: "" },
+                        { data: "Genres", defaultContent: "" },
+                        { data: "Director(s)", defaultContent: "" },
+                        { data: "Actor(s)", defaultContent: "" },
+                        { data: "Country", defaultContent: "" }
                     ],
                     responsive: true,
-                    pageLength: 25, // Rows per page
-                    order: [[ 0, "asc" ]] // Sort by Title alphabetically
+                    pageLength: 25,
+                    order: [[ 0, "asc" ]],
+                    language: {
+                        search: "Search movies:",
+                        zeroRecords: "No movies found",
+                        info: "Showing _START_ to _END_ of _TOTAL_ movies",
+                        infoEmpty: "No movies available",
+                        infoFiltered: "(filtered from _MAX_ total movies)"
+                    }
                 });
 
-                // Hide loader and show table
                 $('#loading').hide();
-                $('#movieTable').show();
+                $('#movieTable').fadeIn();
+            },
+            error: function(err) {
+                $('#loading').html('<p class="text-danger">Error loading CSV file. Ensure "movies.csv" exists.</p>');
             }
         });
     });
