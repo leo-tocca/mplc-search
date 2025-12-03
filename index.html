@@ -44,22 +44,22 @@
     <h2>Cercate qui i film per il prossimo cineforum!</h2>
     <div id="loading" class="text-center p-5">
         <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Loading...</span>
+            <span class="visually-hidden">Caricamento</span>
         </div>
-        <p class="mt-2">Loading library...</p>
+        <p class="mt-2">Caricamento della libreria...</p>
     </div>
     
     <table id="movieTable" class="table table-hover table-striped" style="width:100%; display:none;">
         <thead>
             <tr>
-                <th>Title</th>
-                <th>Year</th>
-                <th>Original Title</th>
-                <th>Release Date</th>
-                <th>Genres</th>
-                <th>Director</th>
-                <th>Actors</th>
-                <th>Country</th>
+                <th>Titolo</th>
+                <th>Anno</th>
+                <th>Titolo originale</th>
+                <th>Data di rilascio</th>
+                <th>Generi</th>
+                <th>Regista</th>
+                <th>Attori</th>
+                <th>Paese</th>
             </tr>
         </thead>
         <tbody></tbody>
@@ -106,10 +106,10 @@
                     pageLength: 25,
                     order: [[ 0, "asc" ]],
                     language: {
-                        search: "Search movies:",
-                        zeroRecords: "No movies found",
+                        search: "Cerca film:",
+                        zeroRecords: "Nessun film trovato",
                         info: "Showing _START_ to _END_ of _TOTAL_ movies",
-                        infoEmpty: "No movies available",
+                        infoEmpty: "Nessun film disponibile",
                         infoFiltered: "(filtered from _MAX_ total movies)"
                     }
                 });
