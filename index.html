@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Collection Browser</title>
+    <!-- Bootstrap CSS for styling -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css">
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+    
+    <style>
+        body { padding: 20px; background-color: #f8f9fa; }
+        .container { background-color: white; padding: 30px; border-radius: 8px; box-shadow: 0 0 15px rgba(0,0,0,0.1); }
+        h1 { margin-bottom: 20px; text-align: center; color: #333; }
+        #loading { text-align: center; font-size: 1.2rem; color: #666; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🎬 Movie Database</h1>
+    <div id="loading">Loading data, please wait...</div>
+    
+    <table id="movieTable" class="table table-striped" style="width:100%; display:none;">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Original Title</th>
+                <th>Year</th>
+                <th>Release Date</th>
+                <th>Genres</th>
+                <th>Director</th>
+                <th>Actors</th>
+                <th>Country</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Data will be inserted here by JavaScript -->
+        </tbody>
+    </table>
+</div>
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+<!-- PapaParse (to read the CSV) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<!-- DataTables (to build the table) -->
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        // Parse the CSV file
+        Papa.parse("movies.csv", {
+            download: true,
+            header: true,
+            skipEmptyLines: true,
+            complete: function(results) {
+                // results.data contains the JSON from CSV
+                var data = results.data;
+                
+                // Initialize DataTable
+                $('#movieTable').DataTable({
+                    data: data,
+                    columns: [
+                        { data: "Title" },
+                        { data: "Original title" },
+                        { data: "Year" },
+                        { data: "Release date" },
+                        { data: "Genres" },
+                        { data: "Director(s)" },
+                        { data: "Actor(s)" },
+                        { data: "Country" }
+                    ],
+                    responsive: true,
+                    pageLength: 25, // Rows per page
+                    order: [[ 0, "asc" ]] // Sort by Title alphabetically
+                });
+
+                // Hide loader and show table
+                $('#loading').hide();
+                $('#movieTable').show();
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
